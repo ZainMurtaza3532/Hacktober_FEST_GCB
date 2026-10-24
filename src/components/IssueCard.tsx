@@ -5,7 +5,6 @@ import {
   Calendar,
   FolderGit2,
   Sparkles,
-  GitPullRequest,
   BookOpen,
 } from 'lucide-react';
 import { GithubIssue } from '../types/github';

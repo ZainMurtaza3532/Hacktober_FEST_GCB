@@ -7,10 +7,19 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+.env
+.env.local
+.env.*.local
+.env.*
+!/.env.example
+
 node_modules
 dist
 dist-ssr
 *.local
+
+# If this file was already tracked by Git, run:
+# git rm --cached .env
 
 # Editor directories and files
 .vscode/*

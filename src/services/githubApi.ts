@@ -3,7 +3,6 @@ import {
   GithubSearchResponse,
   ApiError,
   FetchIssuesOptions,
-  SkillFilter,
 } from '../types/github';
 
 const GITHUB_SEARCH_ENDPOINT = 'https://api.github.com/search/issues';
@@ -152,10 +151,17 @@ export async function fetchGithubIssues(
   const url = `${GITHUB_SEARCH_ENDPOINT}?${searchParams.toString()}`;
 
   try {
+    const githubToken = import.meta.env.VITE_GITHUB_TOKEN;
+    const headers: Record<string, string> = {
+      Accept: 'application/vnd.github+json',
+    };
+
+    if (githubToken && githubToken.trim() !== '') {
+      headers.Authorization = `Bearer ${githubToken}`;
+    }
+
     const response = await fetch(url, {
-      headers: {
-        Accept: 'application/vnd.github.v3+json',
-      },
+      headers,
     });
 
     // Handle rate-limiting (HTTP 403 or 429)

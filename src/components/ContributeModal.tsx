@@ -2,14 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {
   X,
   ExternalLink,
-  GitPullRequest,
   FolderGit2,
   Copy,
   Check,
-  Terminal,
   MessageSquare,
   Sparkles,
-  GitBranch,
   BookOpen,
 } from 'lucide-react';
 import { GithubIssue } from '../types/github';
