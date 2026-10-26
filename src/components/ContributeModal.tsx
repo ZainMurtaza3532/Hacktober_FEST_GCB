@@ -3,7 +3,15 @@ import {
   X,
   ExternalLink,
   FolderGit2,
+<<<<<<< HEAD
   MessageSquare,
+=======
+  Copy,
+  Check,
+  MessageSquare,
+  Sparkles,
+  BookOpen,
+>>>>>>> 1be4eac5ba4084990fd2d720d44a05adda59c898
 } from 'lucide-react';
 import { GithubIssue } from '../types/github';
 import { ContributionChecklist } from './ContributionChecklist';
