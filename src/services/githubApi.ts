@@ -3,7 +3,6 @@ import {
   GithubSearchResponse,
   ApiError,
   FetchIssuesOptions,
-  SkillFilter,
 } from '../types/github';
 
 const GITHUB_SEARCH_ENDPOINT = 'https://api.github.com/search/issues';

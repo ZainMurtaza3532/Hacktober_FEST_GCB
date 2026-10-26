@@ -11,7 +11,7 @@ interface IssueListProps {
   error: ApiError | null;
   onRetry: () => void;
   onResetFilters: () => void;
-  onInspect: (issue: GithubIssue) => void;
+  onInspect: (issue: GithubIssue, initialTab?: 'insights' | 'checklist') => void;
 }
 
 export const IssueList: React.FC<IssueListProps> = ({

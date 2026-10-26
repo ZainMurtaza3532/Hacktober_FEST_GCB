@@ -1,18 +1,18 @@
-import React from 'react';
 import {
   MessageSquare,
   ExternalLink,
   Calendar,
   FolderGit2,
   Sparkles,
-  GitPullRequest,
   BookOpen,
+  CheckCircle2,
 } from 'lucide-react';
 import { GithubIssue } from '../types/github';
+import { getStoredChecklistProgress } from '../hooks/useContributionChecklist';
 
 interface IssueCardProps {
   issue: GithubIssue;
-  onInspect: (issue: GithubIssue) => void;
+  onInspect: (issue: GithubIssue, initialTab?: 'insights' | 'checklist') => void;
 }
 
 /**
@@ -63,6 +63,8 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue, onInspect }) => {
   const isGoodFirst = issue.labels.some((l) =>
     l.name.toLowerCase().includes('good first')
   );
+
+  const checklistProgress = getStoredChecklistProgress(issue);
 
   return (
     <article className="group relative flex flex-col justify-between glass-panel hover:bg-slate-900/90 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-1 border border-slate-800/80 hover:border-indigo-500/40">
@@ -117,6 +119,25 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue, onInspect }) => {
             </span>
           )}
 
+          {checklistProgress.completed > 0 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onInspect(issue, 'checklist');
+              }}
+              className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border transition-all hover:scale-105 ${
+                checklistProgress.completed === 6
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 animate-pulse'
+                  : 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
+              }`}
+              title="Open Contribution Checklist"
+            >
+              <CheckCircle2 className="w-3 h-3 mr-1" />
+              <span>Checklist: {checklistProgress.completed}/6</span>
+            </button>
+          )}
+
           {issue.labels
             .filter((l) => !l.name.toLowerCase().includes('good first'))
             .slice(0, 3)
@@ -151,28 +172,45 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue, onInspect }) => {
           <span className="text-[11px] text-slate-500">#{issue.number}</span>
         </div>
 
-        {/* Two Action Buttons: "View on GitHub" & "Inspect & Contribute" */}
-        <div className="grid grid-cols-2 gap-2">
-          {/* Action 1: View on GitHub */}
+        {/* Action Buttons: Understand, Checklist, and GitHub */}
+        <div className="flex items-center gap-2">
+          {/* Action 1: Understand Issue */}
+          <button
+            type="button"
+            onClick={() => onInspect(issue, 'insights')}
+            className="flex-1 inline-flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition-all hover:text-white"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Understand</span>
+          </button>
+
+          {/* Action 2: Contribution Checklist */}
+          <button
+            type="button"
+            onClick={() => onInspect(issue, 'checklist')}
+            className={`flex-1 inline-flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all hover:scale-[1.02] active:scale-[0.98] ${
+              checklistProgress.completed === 6
+                ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20'
+                : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white shadow-md shadow-indigo-600/20'
+            }`}
+          >
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>
+              Checklist{checklistProgress.completed > 0 ? ` (${checklistProgress.completed}/6)` : ''}
+            </span>
+          </button>
+
+          {/* Action 3: View on GitHub External Link */}
           <a
             href={issue.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition-all hover:text-white"
+            className="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-700/80 transition-colors flex-shrink-0"
+            title="View original issue on GitHub"
+            aria-label="View original issue on GitHub"
           >
-            <span>View on GitHub</span>
-            <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+            <ExternalLink className="w-4 h-4" />
           </a>
-
-          {/* Action 2: Understand Issue Drawer */}
-          <button
-            type="button"
-            onClick={() => onInspect(issue)}
-            className="inline-flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white shadow-md shadow-indigo-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Understand Issue</span>
-          </button>
         </div>
       </div>
     </article>

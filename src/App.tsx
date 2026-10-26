@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar';
 import { FilterBar } from './components/FilterBar';
 import { IssueList } from './components/IssueList';
 import { UnderstandIssueDrawer } from './components/UnderstandIssueDrawer';
+import { PersistentChecklistTab } from './components/PersistentChecklistTab';
 import { useGithubIssues } from './hooks/useGithubIssues';
 import { GithubIssue, SkillFilter } from './types/github';
 import { Heart, Sparkles } from 'lucide-react';
@@ -13,8 +14,14 @@ export const App: React.FC = () => {
   const [selectedSkill, setSelectedSkill] = useState<SkillFilter>('All');
   const [goodFirstIssue, setGoodFirstIssue] = useState<boolean>(true);
 
-  // Modal / Drawer state for "Inspect & Contribute"
+  // Modal / Drawer state for "Inspect & Contribute" and active tab
   const [selectedIssue, setSelectedIssue] = useState<GithubIssue | null>(null);
+  const [drawerTab, setDrawerTab] = useState<'insights' | 'checklist'>('insights');
+
+  const handleOpenIssue = (issue: GithubIssue, tab: 'insights' | 'checklist' = 'insights') => {
+    setSelectedIssue(issue);
+    setDrawerTab(tab);
+  };
 
   // Fetch issues with 300ms debounce on search input
   const { issues, totalCount, isLoading, error, refetch } = useGithubIssues({
@@ -80,16 +87,23 @@ export const App: React.FC = () => {
             error={error}
             onRetry={refetch}
             onResetFilters={handleResetFilters}
-            onInspect={(issue) => setSelectedIssue(issue)}
+            onInspect={handleOpenIssue}
           />
         </section>
       </main>
 
-      {/* Feature 3: Understand This Issue Drawer */}
+      {/* Feature 3 & 4: Understand This Issue Drawer with Contribution Checklist */}
       <UnderstandIssueDrawer
         issue={selectedIssue}
         isOpen={selectedIssue !== null}
         onClose={() => setSelectedIssue(null)}
+        initialTab={drawerTab}
+      />
+
+      {/* Feature 4: Persistent Contribution Checklist Tab */}
+      <PersistentChecklistTab
+        activeIssue={selectedIssue}
+        onOpenIssueModal={handleOpenIssue}
       />
 
       {/* Footer */}
